@@ -1,3 +1,7 @@
+const form = document.querySelector('form');
+let lng1;
+let lat1;
+
 mapboxgl.accessToken = 'pk.eyJ1IjoiaGFuc21hbmRlciIsImEiOiJja2E1aWpqNnQwMGdmM2Zwb2wycHNnbWN0In0.25P6RlgqILLSEirCdvIwoA';
 
 function success(pos) {
@@ -32,14 +36,18 @@ function createMap(lng, lat) {
 
   marker.togglePopup();
 
-  fetchPOI(lng, lat);
+  lng1 = lng;
+  lat1 = lat;
+
 }
 
-function fetchPOI(lng, lat) {
-  fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/sushi.json?proximity=${lng},${lat}&access_token=${mapboxgl.accessToken}`)
+function fetchPOI(lng, lat, searchval) {
+  let places = [];
+
+  fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${searchval}.json?proximity=${lng},${lat}&types=poi&access_token=${mapboxgl.accessToken}`)
   .then(data => data.json())
   .then(json => {
-    let places = [];
+    
 
     json.features.forEach(feature => {
       lng2 = feature.geometry.coordinates[0];
@@ -58,9 +66,9 @@ function fetchPOI(lng, lat) {
     places.sort(function (a,b) {
       return a.d - b.d;
     })
-
-    console.log(places)
   })
+
+  return places;
 }
 
 function distance(lat1, lon1, lat2, lon2, unit) {
@@ -77,3 +85,17 @@ function distance(lat1, lon1, lat2, lon2, unit) {
   if (unit=="N") { dist = dist * 0.8684 }
   return dist
 }
+
+form.addEventListener('keydown', function(e) {
+  if (e.keyCode === 13) {
+    e.preventDefault();
+    
+    if (lng1 !== undefined && lat1 !== undefined) {
+      let places = fetchPOI(lng1, lat1, e.target.value);
+
+      console.log(places)
+    }
+
+    e.target.value = "";
+  }
+})
