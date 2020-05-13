@@ -39,7 +39,37 @@ function fetchPOI(lng, lat) {
   fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/sushi.json?proximity=${lng},${lat}&access_token=${mapboxgl.accessToken}`)
   .then(data => data.json())
   .then(json => {
-    console.log(json)
+    let places = [];
+
+    json.features.forEach(feature => {
+      lng2 = feature.geometry.coordinates[0];
+      lat2 = feature.geometry.coordinates[1];
+
+      let dist = distance(lat, lng, lat2, lng2);
+
+      places.push({
+        d: dist,
+        place: feature,
+      })
+
+      console.log(dist, feature)
+    });
+
+    console.log(places)
   })
 }
 
+function distance(lat1, lon1, lat2, lon2, unit) {
+  let radlat1 = Math.PI * lat1/180
+  let radlat2 = Math.PI * lat2/180
+  let theta = lon1-lon2
+  let radtheta = Math.PI * theta/180
+  let dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+
+  dist = Math.acos(dist)
+  dist = dist * 180/Math.PI
+  dist = dist * 60 * 1.1515
+  if (unit=="K") { dist = dist * 1.609344 }
+  if (unit=="N") { dist = dist * 0.8684 }
+  return dist
+}
