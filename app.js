@@ -37,6 +37,13 @@ function createMap(lng, lat) {
 
   marker.togglePopup();
 
+  map.addControl(new mapboxgl.GeolocateControl({
+    positionOptions: {
+        enableHighAccuracy: true
+    },
+    trackUserLocation: true
+}));
+
   lng1 = lng;
   lat1 = lat;
 
@@ -123,6 +130,7 @@ pointsOfInterest.addEventListener('click' , function(e) {
     if (e.target.className === 'poi') {
       console.log(e.target.getAttribute('data-long'));
       console.log(e.target.getAttribute('data-lat'));
+      newLocation();
     } else {
       let ele = e.target.closest('.poi');
 
@@ -132,3 +140,9 @@ pointsOfInterest.addEventListener('click' , function(e) {
   }
 })
 
+function newLocation() {
+  let marker = new mapboxgl.Marker()
+    .addTo(map);
+
+  marker.remove();
+}
