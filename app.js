@@ -55,6 +55,10 @@ function fetchPOI(lng, lat) {
       console.log(dist, feature)
     });
 
+    places.sort(function (a,b) {
+      return a.d - b.d;
+    })
+
     console.log(places)
   })
 }
