@@ -1,4 +1,5 @@
 const form = document.querySelector('form');
+const pointsOfInterest = document.querySelector('.points-of-interest');
 let lng1;
 let lat1;
 
@@ -59,16 +60,16 @@ function fetchPOI(lng, lat, searchval) {
         d: dist,
         place: feature,
       })
-
-      console.log(dist, feature)
     });
 
     places.sort(function (a,b) {
       return a.d - b.d;
     })
-  })
 
-  return places;
+    places.forEach(place => {
+      insertHtml(place)
+    })
+  })
 }
 
 function distance(lat1, lon1, lat2, lon2, unit) {
@@ -89,13 +90,23 @@ function distance(lat1, lon1, lat2, lon2, unit) {
 form.addEventListener('keydown', function(e) {
   if (e.keyCode === 13) {
     e.preventDefault();
-    
+    pointsOfInterest.innerHTML = "";
     if (lng1 !== undefined && lat1 !== undefined) {
-      let places = fetchPOI(lng1, lat1, e.target.value);
-
-      console.log(places)
+      fetchPOI(lng1, lat1, e.target.value);
     }
 
     e.target.value = "";
   }
 })
+
+function insertHtml(place) {
+  pointsOfInterest.insertAdjacentHTML('beforeend', `
+    <li class="poi" data-long="${place.place.geometry.coordinates[0]}" data-lat="${place.place.geometry.coordinates[1]}">
+    <ul>
+      <li class="name">${place.place.text}</li>
+      <li class="street-address">${place.place.properties.address}</li>
+      <li class="distance">${place.d.toFixed(2)} KM</li>
+      </ul>
+    </li>
+  `)
+}
