@@ -45,7 +45,7 @@ function createMap(lng, lat) {
 function fetchPOI(lng, lat, searchval) {
   let places = [];
 
-  fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${searchval}.json?proximity=${lng},${lat}&types=poi&access_token=${mapboxgl.accessToken}`)
+  fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${searchval}.json?proximity=${lng},${lat}&types=poi&limit=10&access_token=${mapboxgl.accessToken}`)
   .then(data => data.json())
   .then(json => {
     
