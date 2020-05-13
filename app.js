@@ -22,11 +22,14 @@ function createMap(lng, lat) {
     container: 'map',
     style: 'mapbox://styles/mapbox/streets-v9',
     center: [lng, lat],
-    zoom: 11
+    zoom: 13
   });
 
   const marker = new mapboxgl.Marker()
     .setLngLat([lng, lat])
-    .addTo(map);
+    .addTo(map)
+    .setPopup(new mapboxgl.Popup({closeButton: false , closeOnClick: false}).setHTML("You Are Here"))
+
+  marker.togglePopup();
 }
 
