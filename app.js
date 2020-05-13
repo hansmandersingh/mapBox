@@ -31,5 +31,15 @@ function createMap(lng, lat) {
     .setPopup(new mapboxgl.Popup({closeButton: false , closeOnClick: false}).setHTML("You Are Here"))
 
   marker.togglePopup();
+
+  fetchPOI(lng, lat);
+}
+
+function fetchPOI(lng, lat) {
+  fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/sushi.json?proximity=${lng},${lat}&access_token=${mapboxgl.accessToken}`)
+  .then(data => data.json())
+  .then(json => {
+    console.log(json)
+  })
 }
 
