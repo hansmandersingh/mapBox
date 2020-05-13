@@ -3,16 +3,14 @@ const pointsOfInterest = document.querySelector('.points-of-interest');
 let lng1;
 let lat1;
 
+let marker = new mapboxgl.Marker();
+let map;
+
 mapboxgl.accessToken = 'pk.eyJ1IjoiaGFuc21hbmRlciIsImEiOiJja2E1aWpqNnQwMGdmM2Zwb2wycHNnbWN0In0.25P6RlgqILLSEirCdvIwoA';
 
 function success(pos) {
   const crd = pos.coords;
-
-  console.log('Your current position is:');
-  console.log(`Latitude : ${crd.latitude}`);
-  console.log(`Longitude: ${crd.longitude}`);
-  console.log(`More or less ${crd.accuracy} meters.`);
-
+  
   createMap(crd.longitude, crd.latitude);
 }
 
@@ -23,19 +21,26 @@ function error(err) {
 navigator.geolocation.getCurrentPosition(success, error);
 
 function createMap(lng, lat) {
-  const map = new mapboxgl.Map({
+  map = new mapboxgl.Map({
     container: 'map',
     style: 'mapbox://styles/mapbox/streets-v9',
     center: [lng, lat],
     zoom: 13
   });
 
-  const marker = new mapboxgl.Marker()
+  marker
     .setLngLat([lng, lat])
     .addTo(map)
     .setPopup(new mapboxgl.Popup({closeButton: false , closeOnClick: false}).setHTML("You Are Here"))
 
   marker.togglePopup();
+
+  map.addControl(new mapboxgl.GeolocateControl({
+    positionOptions: {
+        enableHighAccuracy: true
+    },
+    trackUserLocation: true
+}));
 
   lng1 = lng;
   lat1 = lat;
@@ -73,18 +78,25 @@ function fetchPOI(lng, lat, searchval) {
 }
 
 function distance(lat1, lon1, lat2, lon2, unit) {
-  let radlat1 = Math.PI * lat1/180
-  let radlat2 = Math.PI * lat2/180
-  let theta = lon1-lon2
-  let radtheta = Math.PI * theta/180
-  let dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
-
-  dist = Math.acos(dist)
-  dist = dist * 180/Math.PI
-  dist = dist * 60 * 1.1515
-  if (unit=="K") { dist = dist * 1.609344 }
-  if (unit=="N") { dist = dist * 0.8684 }
-  return dist
+	if ((lat1 == lat2) && (lon1 == lon2)) {
+		return 0;
+	}
+	else {
+		let radlat1 = Math.PI * lat1/180;
+		let radlat2 = Math.PI * lat2/180;
+		let theta = lon1-lon2;
+		let radtheta = Math.PI * theta/180;
+		let dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+		if (dist > 1) {
+			dist = 1;
+		}
+		dist = Math.acos(dist);
+		dist = dist * 180/Math.PI;
+		dist = dist * 60 * 1.1515;
+		if (unit=="K") { dist = dist * 1.609344 }
+		if (unit=="N") { dist = dist * 0.8684 }
+		return dist;
+	}
 }
 
 form.addEventListener('keydown', function(e) {
@@ -101,7 +113,7 @@ form.addEventListener('keydown', function(e) {
 
 function insertHtml(place) {
   pointsOfInterest.insertAdjacentHTML('beforeend', `
-    <li class="poi" data-long="${place.place.geometry.coordinates[0]}" data-lat="${place.place.geometry.coordinates[1]}">
+    <li class="poi" data-place="${place.place.text}" data-long="${place.place.geometry.coordinates[0]}" data-lat="${place.place.geometry.coordinates[1]}">
     <ul>
       <li class="name">${place.place.text}</li>
       <li class="street-address">${place.place.properties.address}</li>
@@ -109,4 +121,32 @@ function insertHtml(place) {
       </ul>
     </li>
   `)
+}
+
+pointsOfInterest.addEventListener('click' , function(e) {
+  if (e.target.nodeName === 'LI') {
+    if (e.target.className === 'poi') {
+      newLocation(e.target.getAttribute('data-long'), e.target.getAttribute('data-lat'), e.target.getAttribute('data-place'));
+    } else {
+      let ele = e.target.closest('.poi');
+
+      newLocation(ele.getAttribute('data-long'), ele.getAttribute('data-lat'), ele.getAttribute('data-place'));
+    }
+  }
+})
+
+function newLocation(long, lat, place) {
+  marker.remove();
+
+  map.flyTo({
+    center: [long, lat],
+    essential: true
+  })
+
+  marker
+    .setLngLat([long, lat])
+    .addTo(map)
+    .setPopup(new mapboxgl.Popup({closeButton: false , closeOnClick: false}).setHTML(`${place}`))
+
+  marker.togglePopup();
 }
