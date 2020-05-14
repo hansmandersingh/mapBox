@@ -2,7 +2,6 @@ const form = document.querySelector('form');
 const pointsOfInterest = document.querySelector('.points-of-interest');
 let lng1;
 let lat1;
-
 let marker = new mapboxgl.Marker();
 let map;
 
@@ -10,7 +9,7 @@ mapboxgl.accessToken = 'pk.eyJ1IjoiaGFuc21hbmRlciIsImEiOiJja2E1aWpqNnQwMGdmM2Zwb
 
 function success(pos) {
   const crd = pos.coords;
-  
+
   createMap(crd.longitude, crd.latitude);
 }
 
@@ -53,13 +52,13 @@ function fetchPOI(lng, lat, searchval) {
   fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${searchval}.json?proximity=${lng},${lat}&types=poi&limit=10&access_token=${mapboxgl.accessToken}`)
   .then(data => data.json())
   .then(json => {
-    
+
 
     json.features.forEach(feature => {
       lng2 = feature.geometry.coordinates[0];
       lat2 = feature.geometry.coordinates[1];
 
-      let dist = distance(lat, lng, lat2, lng2);
+      let dist = distance(lat, lng, lat2, lng2, "K");
 
       places.push({
         d: dist,
@@ -149,4 +148,14 @@ function newLocation(long, lat, place) {
     .setPopup(new mapboxgl.Popup({closeButton: false , closeOnClick: false}).setHTML(`${place}`))
 
   marker.togglePopup();
+
+  direction(lng1, lat1, long, lat)
+}
+
+function direction(lon1, lat1, lon2, lat2) {
+  fetch(`https://api.mapbox.com/directions/v5/mapbox/cycling/${lon1},${lat1};${lon2},${lat2}?steps=true&access_token=${mapboxgl.accessToken}`)
+    .then(data => data.json())
+    .then(data => {
+      console.log(data)
+    })
 }
