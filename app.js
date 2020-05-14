@@ -152,6 +152,8 @@ function newLocation(long, lat, place) {
   direction(lng1, lat1, long, lat)
 }
 
+//Trying to add direction here (Ignore the code below)
+
 function direction(lon1, lat1, lon2, lat2) {
   fetch(`https://api.mapbox.com/directions/v5/mapbox/cycling/${lon1},${lat1};${lon2},${lat2}?steps=true&access_token=${mapboxgl.accessToken}`)
     .then(data => data.json())
