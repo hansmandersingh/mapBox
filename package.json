@@ -1,0 +1,26 @@
+{
+  "name": "maps",
+  "version": "1.0.0",
+  "description": "![GitHub Logo](https://miro.medium.com/max/3000/1*aSpzG5laLqjRZGgxaj8YCg.jpeg)",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hansmandersingh/mapBox.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hansmandersingh/mapBox/issues"
+  },
+  "homepage": "https://github.com/hansmandersingh/mapBox#readme",
+  "dependencies": {
+    "gulp": "^4.0.2",
+    "gulp-imagemin": "^7.1.0"
+  },
+  "devDependencies": {
+    "gulp-clean-css": "^4.3.0"
+  }
+}
